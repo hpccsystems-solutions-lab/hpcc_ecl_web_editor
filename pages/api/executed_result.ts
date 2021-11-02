@@ -4,6 +4,7 @@ import { WorkunitsService } from "@hpcc-js/comms";
 type Data = {
   status: string;
   results: any;
+  messages: any[];
 };
 
 export default async function handler(
@@ -73,8 +74,27 @@ export default async function handler(
     res.status(200).json({
       status: wuState,
       results: outputs,
+      messages: []
     });
   } else {
-    res.status(200).json({ status: wuState, results: [] });
+    if (wuState == "failed") {
+      let iResponse = await wuService.WUInfo({
+        Wuid: workunitId,
+        IncludeExceptions:	true
+      });
+
+      let messages: any[] = [];
+      if (iResponse.Workunit.Exceptions && iResponse.Workunit.Exceptions.ECLException) {
+        
+        iResponse.Workunit.Exceptions.ECLException.forEach((item: any) => {
+          messages.push({type: item.Severity, text: item.Message, line: item.LineNo, column: item.Column});
+        })      
+      }
+      
+      res.status(200).json({ status: wuState, results: [], messages: messages });   
+
+    } else {
+    res.status(200).json({ status: wuState, results: [], messages: [] });
+    }
   }
 }

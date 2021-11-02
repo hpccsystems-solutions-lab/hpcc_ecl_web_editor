@@ -5,7 +5,7 @@ import styles from "../styles/Home.module.css";
 import { GetServerSideProps } from "next";
 import getRawBody from "raw-body";
 import { Button, Layout, Table, Tabs, Row, Col, Tree } from "antd";
-import {Key} from "antd/es/table/interface";
+import { Key } from "antd/es/table/interface";
 import { useState } from "react";
 import { Comms } from "../utils/Comms";
 import { IncomingForm } from "formidable";
@@ -28,6 +28,8 @@ const Home: NextPage<Props> = (props) => {
   const [statusData, setStatusData] = useState<any>([
     { status: "", workunitId: "" },
   ]);
+
+  const [messages, setMessages] = useState<any[]>([]);
 
   //Code
   const [code, setCode] = useState<string>(props.code);
@@ -62,15 +64,17 @@ const Home: NextPage<Props> = (props) => {
   async function submitClick() {
     setStatusData([{ status: "submitting" }]);
     setQueryData([]);
+    setMessages([]);
 
     console.log("Start Submit - " + Date.now());
-    console.log("code - " + code);
+    //console.log("code - " + code);
 
     let eResp = await Comms.postAPIData("execute_ecl", {
       code: code,
     });
 
     setStatusData([eResp]);
+
     let workunitId = eResp.workunitId;
 
     let count = 0;
@@ -80,16 +84,22 @@ const Home: NextPage<Props> = (props) => {
       });
 
       console.log("workunit " + workunitId + " Status = " + rResp.status);
+      if (rResp) {
+        if (rResp.status === "completed") {
+          setStatusData([{ status: rResp.status, workunitId: workunitId }]);
+          setQueryData(rResp.results);
+          console.log("End Submit - " + Date.now());
+          return;
+        } else if (rResp.status === "failed") {
+          setStatusData([{ status: rResp.status, workunitId: workunitId }]);
+          setMessages(rResp.messages);
 
-      if (rResp && rResp.status === "completed") {
-        setStatusData([{ status: rResp.status, workunitId: workunitId }]);
-        setQueryData(rResp.results);
-        console.log("End Submit - " + Date.now());
-        return;
-      } else {
-        count++;
-        setStatusData([{ status: rResp.status, workunitId: workunitId }]);
-        await sleep(1000);
+          return;
+        } else {
+          count++;
+          setStatusData([{ status: rResp.status, workunitId: workunitId }]);
+          await sleep(1000);
+        }
       }
     }
   }
@@ -118,6 +128,26 @@ const Home: NextPage<Props> = (props) => {
       return str + "," + col.key;
     } else {
       return col.key;
+    }
+  }
+
+  //Error messages or warning messages
+  function plotMessages(messages: any[]) {
+    if (messages.length > 0) {
+      return (
+        <Tabs>
+          <TabPane tab={"Errors"} key={"errors"}>
+            <Table
+              rowKey={"line"}
+              columns={[
+                { title: "Error", dataIndex: "type", key: "type" },
+                { title: "Message", dataIndex: "text", key: "text" },
+              ]}
+              dataSource={messages}
+            />
+          </TabPane>
+        </Tabs>
+      );
     }
   }
 
@@ -168,7 +198,7 @@ const Home: NextPage<Props> = (props) => {
                 </span>
               </Col>
             </Row>
-
+            {plotMessages(messages)}
             {plotOutput(queryData)}
           </TabPane>
           <TabPane tab={"LOGICAL FILES"} key={"Logical Files"}>
@@ -187,7 +217,14 @@ const Home: NextPage<Props> = (props) => {
                   onSelect={(keys: Key[], e) => treeNodeSelected(e.node)}
                 />
               </Layout.Sider>
-              <Layout style={{overflow: "scroll", background: "white", height: 800 }}><Table columns={logicalFileDataColumns} dataSource={logicalFileData}/></Layout>
+              <Layout
+                style={{ overflow: "scroll", background: "white", height: 800 }}
+              >
+                <Table
+                  columns={logicalFileDataColumns}
+                  dataSource={logicalFileData}
+                />
+              </Layout>
             </Layout>
           </TabPane>
         </Tabs>
