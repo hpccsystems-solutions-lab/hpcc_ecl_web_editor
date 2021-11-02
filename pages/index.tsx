@@ -142,6 +142,8 @@ const Home: NextPage<Props> = (props) => {
               columns={[
                 { title: "Error", dataIndex: "type", key: "type" },
                 { title: "Message", dataIndex: "text", key: "text" },
+                { title: "Line", dataIndex: "line", key: "line"},
+                { title: "Column", dataIndex: "column", key: "column"}
               ]}
               dataSource={messages}
             />
