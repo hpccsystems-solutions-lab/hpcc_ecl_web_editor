@@ -4,7 +4,7 @@
       function OpenECLEditor(codeList, files) {
         var form = document.createElement("form");
         form.setAttribute("method", "post");
-        form.setAttribute("action", "https://hpcc-ecl-web-editor.vercel.app/");
+        form.setAttribute("action", "https://hpcc-ecl-web-editor.azurewebsites.net/");
         form.setAttribute("target", "ecl_web_editor");
 
         let code = "";
@@ -62,7 +62,7 @@ allPeople := DATASET([ {1, 'Fred', 'Smith'},
                         {2, 'Joe', 'Blow'}, 
                         {3, 'Jane', 'Smith'}], Layout_Person); 
 
-somePeople := allPeople(LastName='Smith') 
+somePeople := allPeople(LastName='Smith'); 
 
 //Outputs
 somePeople;
