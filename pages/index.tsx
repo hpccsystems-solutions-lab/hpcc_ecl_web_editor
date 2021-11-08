@@ -176,7 +176,7 @@ const Home: NextPage<Props> = (props) => {
     <Layout style={{ minHeight: "100vh" }}>
       <Header>
         <div style={{ fontSize: 18, color: "white" }}>
-          HPCC Systems - Web ECL Editor
+          HPCC Systems - ECL Web Editor
         </div>
       </Header>
       <Layout style={{ padding: 30 }}>
