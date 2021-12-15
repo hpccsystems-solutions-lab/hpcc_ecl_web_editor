@@ -62,6 +62,8 @@ export default async function handler(
         Start: 0,
         Count: 1050,
       });
+      
+      //console.log(JSON.stringify(rResponse.Result.Row));
 
       outputs.push({
         name: item.Name,

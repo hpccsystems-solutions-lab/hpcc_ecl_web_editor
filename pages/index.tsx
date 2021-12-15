@@ -6,7 +6,7 @@ import { GetServerSideProps } from "next";
 import getRawBody from "raw-body";
 import { Button, Layout, Table, Tabs, Row, Col, Tree } from "antd";
 import { Key } from "antd/es/table/interface";
-import { useState } from "react";
+import { ReactChild, ReactFragment, ReactPortal, useState } from "react";
 import { Comms } from "../utils/Comms";
 import { IncomingForm } from "formidable";
 import { EventDataNode } from "antd/lib/tree";
@@ -116,7 +116,7 @@ const Home: NextPage<Props> = (props) => {
       Object.keys(data[0]).forEach((key) => {
         if ("_row_id_" !== key)
           //ignore the decorated column used to produce a unique row key
-          columns.push({ title: key, dataIndex: key, key: key });
+          columns.push({ title: key, dataIndex: key, key: key, render: (text: any) => <span>{String(text)}</span> });
       });
     }
     return columns;
