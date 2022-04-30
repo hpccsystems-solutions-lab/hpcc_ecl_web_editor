@@ -11,27 +11,45 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Data>
 ) {
-    const host = process.env.HPCC_APP_URL;
-    const port = process.env.HPCC_APP_PORT;
-    const userId = process.env.HPCC_USER_ID;
-    const password = process.env.HPCC_PASSWORD;
-    const jobName = process.env.HPCC_EXECUTE_JOB_NAME;
-    const cluster = process.env.HPCC_EXECUTE_CLUSTER_NAME? process.env.HPCC_EXECUTE_CLUSTER_NAME: '' ;
+  const host = process.env.HPCC_APP_URL;
+  const port = process.env.HPCC_APP_PORT;
+  const userId = process.env.HPCC_USER_ID;
+  const password = process.env.HPCC_PASSWORD;
+  const jobName = process.env.HPCC_EXECUTE_JOB_NAME;
+  const cluster = process.env.HPCC_EXECUTE_CLUSTER_NAME
+    ? process.env.HPCC_EXECUTE_CLUSTER_NAME
+    : "";
 
-  function decorateRowId(data: any[]) {
+  function handleChildRecords(row: any): any {
+    let jsonData: any = [];
+
+    Object.keys(row).forEach((key) => {
+      if (row[key].Row) {
+        jsonData[key] = handleChildRecords(row[key].Row);
+      } else {
+        jsonData[key] = row[key];
+      }
+    });
+
+    return jsonData ;
+  }
+
+  function decorateRow(data: any[]) {
     let newData: any[] = [];
 
     if (data) {
       let count = 1;
+
       data.forEach((row) => {
         let newRow = { _row_id_: count++, ...row };
-        newData.push(newRow);
+        let flatRow: any = handleChildRecords(newRow);
+
+        //console.log("flat row: " + JSON.stringify({...flatRow}));
+        newData.push({...flatRow});
       });
     }
     return newData;
   }
-
-
 
   const reqPayload = req.body;
   const workunitId = reqPayload.workunitId;
@@ -62,13 +80,13 @@ export default async function handler(
         Start: 0,
         Count: 1050,
       });
-      
+
       //console.log(JSON.stringify(rResponse.Result.Row));
 
       outputs.push({
         name: item.Name,
         columns: item.ECLSchemas ? item.ECLSchemas.ECLSchemaItem : [],
-        data: decorateRowId(rResponse.Result.Row),
+        data: decorateRow(rResponse.Result.Row),
       });
     }
     respOutputs.forEach((item: any) => {});
@@ -76,27 +94,35 @@ export default async function handler(
     res.status(200).json({
       status: wuState,
       results: outputs,
-      messages: []
+      messages: [],
     });
   } else {
     if (wuState == "failed") {
       let iResponse = await wuService.WUInfo({
         Wuid: workunitId,
-        IncludeExceptions:	true
+        IncludeExceptions: true,
       });
 
       let messages: any[] = [];
-      if (iResponse.Workunit.Exceptions && iResponse.Workunit.Exceptions.ECLException) {
-        
+      if (
+        iResponse.Workunit.Exceptions &&
+        iResponse.Workunit.Exceptions.ECLException
+      ) {
         iResponse.Workunit.Exceptions.ECLException.forEach((item: any) => {
-          messages.push({type: item.Severity, text: item.Message, line: item.LineNo, column: item.Column});
-        })      
+          messages.push({
+            type: item.Severity,
+            text: item.Message,
+            line: item.LineNo,
+            column: item.Column,
+          });
+        });
       }
-      
-      res.status(200).json({ status: wuState, results: [], messages: messages });   
 
+      res
+        .status(200)
+        .json({ status: wuState, results: [], messages: messages });
     } else {
-    res.status(200).json({ status: wuState, results: [], messages: [] });
+      res.status(200).json({ status: wuState, results: [], messages: [] });
     }
   }
 }
