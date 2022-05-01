@@ -1,35 +1,13 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import { WorkunitsService } from "@hpcc-js/comms";
 import type { NextApiRequest, NextApiResponse } from "next";
+import {parse} from 'papaparse'
 
 type Data = {
   status: string;
   data: any;
 };
 
-function CSVtoArray(text: string) {
-  var re_valid =
-    /^\s*(?:'[^'\\]*(?:\\[\S\s][^'\\]*)*'|"[^"\\]*(?:\\[\S\s][^"\\]*)*"|[^,'"\s\\]*(?:\s+[^,'"\s\\]+)*)\s*(?:,\s*(?:'[^'\\]*(?:\\[\S\s][^'\\]*)*'|"[^"\\]*(?:\\[\S\s][^"\\]*)*"|[^,'"\s\\]*(?:\s+[^,'"\s\\]+)*)\s*)*$/;
-  var re_value =
-    /(?!\s*$)\s*(?:'([^'\\]*(?:\\[\S\s][^'\\]*)*)'|"([^"\\]*(?:\\[\S\s][^"\\]*)*)"|([^,'"\s\\]*(?:\s+[^,'"\s\\]+)*))\s*(?:,|$)/g;
-  // Return NULL if input string is not well formed CSV string.
-  if (!re_valid.test(text)) return [];
-  var a = []; // Initialize array to receive values.
-  text.replace(
-    re_value, // "Walk" the string using replace with callback.
-    function (m0, m1, m2, m3) {
-      // Remove backslash from \' in single quoted values.
-      if (m1 !== undefined) a.push(m1.replace(/\\'/g, "'"));
-      // Remove backslash from \" in double quoted values.
-      else if (m2 !== undefined) a.push(m2.replace(/\\"/g, '"'));
-      else if (m3 !== undefined) a.push(m3);
-      return ""; // Return empty string.
-    }
-  );
-  // Handle special case of empty last value.
-  if (/,\s*$/.test(text)) a.push("");
-  return a;
-}
 
 function decorateRowId(data: any[]) {
   let newData: any[] = [];
@@ -107,12 +85,12 @@ export default async function handler(
     let rows: any[] = [];
     for (let i: number = 1; i < data.length; i++) {
       //   let row = data[i].line.split(",");
-      let row = CSVtoArray(data[i].line);
+      let row = parse((data[i].line));
 
       let colIndex = 0;
       let jsonRow = '{"_row_id_":' + i;
 
-      row.forEach((value: string) => {
+      row.data.forEach((value: any) => {
         jsonRow = jsonRow + ',"' + columns[colIndex] + '":"' + value + '"';
 
         colIndex++;
