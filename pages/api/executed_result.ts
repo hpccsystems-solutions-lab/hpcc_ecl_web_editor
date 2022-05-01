@@ -22,10 +22,11 @@ export default async function handler(
 
   function handleChildRecords(row: any): any {
     let jsonData: any = [];
+    let count = 1;
 
     Object.keys(row).forEach((key) => {
-      if (row[key].Row) {
-        jsonData[key] = handleChildRecords(row[key].Row);
+      if (row[key].Row) { //Check to see if Row tag is present. If it is, then we have child record. Needs to format to correct JSON
+        jsonData[key] = decorateRow(row[key].Row);
       } else {
         jsonData[key] = row[key];
       }
@@ -42,9 +43,14 @@ export default async function handler(
 
       data.forEach((row) => {
         let newRow = { _row_id_: count++, ...row };
+        
+        //console.log("new row: " + JSON.stringify(newRow));
+        
         let flatRow: any = handleChildRecords(newRow);
-
+        
         //console.log("flat row: " + JSON.stringify({...flatRow}));
+        
+
         newData.push({...flatRow});
       });
     }

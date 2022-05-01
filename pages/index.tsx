@@ -108,6 +108,22 @@ const Home: NextPage<Props> = (props) => {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
+  function renderCell(value: any) {
+    if (typeof(value) === 'object') {
+      return (
+          <Table
+          rowKey={"_row_id_"}
+          columns={computeTableColumns(value)}
+          dataSource={value}
+          pagination={false}
+          size={"small"}
+          />
+        )
+    } else {
+      return (String(value))
+    }
+  }
+
   //UI Metadata
   function computeTableColumns(data: any) {
     let columns: any[] = [];
@@ -116,7 +132,7 @@ const Home: NextPage<Props> = (props) => {
       Object.keys(data[0]).forEach((key) => {
         if ("_row_id_" !== key)
           //ignore the decorated column used to produce a unique row key
-          columns.push({ title: key, dataIndex: key, key: key, render: (text: any) => <span>{String(text)}</span> });
+          columns.push({ title: key, dataIndex: key, key: key, render: (text: any) => <span>{renderCell(text)}</span> });
       });
     }
     return columns;
@@ -164,6 +180,11 @@ const Home: NextPage<Props> = (props) => {
             rowKey={"_row_id_"}
             columns={computeTableColumns(item.data)}
             dataSource={item.data}
+            
+            expandable={{
+              expandedRowRender: record => <p style={{ margin: 0 }}>{record}</p>,
+              rowExpandable: record => record.length ,
+            }}
           />
         </TabPane>
       );
