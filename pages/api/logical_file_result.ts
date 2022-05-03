@@ -8,6 +8,30 @@ type Data = {
   data: any;
 };
 
+function splitQuotes(line: string) {
+  if(line.indexOf('"') < 0) 
+    return line.split(',')
+
+  let result = [], cell = '', quote = false;
+  for(let i = 0; i < line.length; i++) {
+    let char = line[i]
+    if(char == '"' && line[i+1] == '"') {
+      cell += char
+      i++
+    } else if(char == '"') {
+      quote = !quote;
+    } else if(!quote && char == ',') {
+      result.push(cell)
+      cell = ''
+    } else {
+      cell += char
+    }
+    if ( i == line.length-1 && cell) {
+      result.push(cell)
+    }
+  }
+  return result
+}
 
 function decorateRowId(data: any[]) {
   let newData: any[] = [];
@@ -74,31 +98,40 @@ export default async function handler(
       data: decorateRowId(rResponse.Result.Row),
     });
   } else {
+    console.log('CSV File Read ' + reqPayload.logicalFile);
+
     //Format CSV
     let data = rResponse.Result.Row;
 
     //Assume that first row is column definitions
     let columns: string[] = computeTableColumns(data);
-    //console.log(columns);
+    console.log(columns);
 
     //Build the data json
     let rows: any[] = [];
     for (let i: number = 1; i < data.length; i++) {
-      //   let row = data[i].line.split(",");
-      let row = parse((data[i].line));
-
-      let colIndex = 0;
-      let jsonRow = '{"_row_id_":' + i;
-
-      row.data.forEach((value: any) => {
-        jsonRow = jsonRow + ',"' + columns[colIndex] + '":"' + value + '"';
-
-        colIndex++;
-      });
-      jsonRow = jsonRow + "}";
-
-      console.log(jsonRow);
-      rows.push(JSON.parse(jsonRow));
+      
+      let row = null;
+      try {  
+        let row = splitQuotes((data[i].line));
+        let colIndex = 0;
+        let jsonRow = '{"_row_id_":' + i;
+  
+        row.forEach((value: any) => {
+          jsonRow = jsonRow + ',"' + columns[colIndex] + '":"' + value + '"';
+  
+          colIndex++;
+        });
+        jsonRow = jsonRow + "}";
+  
+        //console.log(jsonRow);
+        rows.push(JSON.parse(jsonRow));
+     
+      } catch (e) {
+        let jsonRow = '{"_row_id_":' + i + ',"' + columns[0] + '":"'  + e + '"}';
+        console.log(jsonRow);
+        //rows.push(JSON.parse(jsonRow));
+      }
     }
     //console.log(rows);
     res.status(200).json({ status: "completed", data: rows });

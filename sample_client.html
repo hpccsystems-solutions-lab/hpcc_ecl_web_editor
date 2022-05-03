@@ -4,7 +4,8 @@
       function OpenECLEditor(codeList, files) {
         var form = document.createElement("form");
         form.setAttribute("method", "post");
-        form.setAttribute("action", "https://hpcc-ecl-web-editor.azurewebsites.net/");
+        //form.setAttribute("action", "https://hpcc-ecl-web-editor.azurewebsites.net/");
+        form.setAttribute("action", "http://localhost:3000/");
         form.setAttribute("target", "ecl_web_editor");
 
         let code = "";
@@ -48,26 +49,26 @@
     <div>Code Snippet 1</div>  
     <pre id="code_1">
 
-Layout_Person := RECORD
-    UNSIGNED1 PersonID; 
-    STRING15 FirstName; 
-    STRING25 LastName; 
-END; 
-
-    </pre>
-    <div>Code Snippet 2</div>  
-    <pre id="code_2">       
-
-allPeople := DATASET([ {1, 'Fred', 'Smith'}, 
-                        {2, 'Joe', 'Blow'}, 
-                        {3, 'Jane', 'Smith'}], Layout_Person); 
-
-somePeople := allPeople(LastName='Smith'); 
+  KindleRec_Raw := RECORD
+      STRING    rowID;    
+      STRING    asin;
+      STRING    helpful;
+      STRING    rating;  
+      STRING    reviewText;  
+      STRING    reviewTime;  
+      STRING    reviewerID;  
+      STRING    reviewerName;
+      STRING    summary;  
+      STRING    unixReviewTime;
+  END;
+   
+  kindleDS_Raw := DATASET('~kindle::review::raw.csv', KindleRec_Raw, CSV(HEADING(1)));
+   
 
 //Outputs
 somePeople;
     </pre>
 
-    <button onclick="OpenECLEditor(['code_1', 'code_2'])">Try Me</button> 
+    <button onclick="OpenECLEditor(['code_1'], '~kindle::review::raw.csv')">Try Me</button> 
   </body>
 </html>
