@@ -1,7 +1,7 @@
 <html>
   <head>
     <script>
-      function OpenECLEditor(codeList, files) {
+      function OpenECLEditor(codeList, headerList=[], files='') {
         var form = document.createElement("form");
         form.setAttribute("method", "post");
         //form.setAttribute("action", "https://hpcc-ecl-web-editor.azurewebsites.net/");
@@ -14,12 +14,26 @@
           code = code + source.innerText;
         }
 
+        let header = "";
+        for (let item of headerList) {
+          source = document.getElementById(item);
+          header = header + source.innerText;
+        }
+
         var input = document.createElement("input");
         input.type = "hidden";
         input.name = "code";
         input.value = code;
         form.appendChild(input);
 
+
+        var input = document.createElement("input");
+        input.type = "hidden";
+        input.name = "header";
+        input.value = header;
+        form.appendChild(input);
+
+        
         if (files) {
           input = document.createElement("input");
           input.type = "hidden";
@@ -47,7 +61,7 @@
 
   <body>
     <div>Code Snippet 1</div>  
-    <pre id="code_1">
+    <pre id="header_1">
 
   KindleRec_Raw := RECORD
       STRING    rowID;    
@@ -62,13 +76,16 @@
       STRING    unixReviewTime;
   END;
    
-  kindleDS_Raw := DATASET('~kindle::review::raw.csv', KindleRec_Raw, CSV(HEADING(1)));
-   
-
-//Outputs
-somePeople;
+  kindleDS_Raw := DATASET('~kindle::review::kindlereviews.csv', KindleRec_Raw, CSV(HEADING(1)));
     </pre>
 
-    <button onclick="OpenECLEditor(['code_1'], '~kindle::review::raw.csv')">Try Me</button> 
+    <pre id="code_1">
+
+
+  kindleDS_Raw;
+
+    </pre>
+
+    <button onclick="OpenECLEditor(['code_1'], ['header_1'])">Try Me</button> 
   </body>
 </html>

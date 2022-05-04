@@ -1,7 +1,7 @@
 import type { NextPage } from "next";
 import dynamic from "next/dynamic";
 import { GetServerSideProps } from "next";
-import { Button, Layout, Table, Tabs, Row, Col, Tree } from "antd";
+import { Button, Layout, Table, Tabs, Row, Col, Tree, Collapse} from "antd";
 import { Key } from "antd/es/table/interface";
 import { useState } from "react";
 import { Comms } from "../utils/Comms";
@@ -14,6 +14,7 @@ const { Header } = Layout;
 
 interface Props {
   code: string;
+  header: string;
   logicalFiles: any[];
 }
 
@@ -30,6 +31,9 @@ const Home: NextPage<Props> = (props) => {
 
   //Code
   const [code, setCode] = useState<string>(props.code);
+  
+  //Used to show a readonly view of some required code. An expandable section.
+  const [header, setHeader] = useState<string>(props.header);
 
   //Logical File Data
   const [logicalFileData, setLogicalFileData] = useState<any>([]);
@@ -67,7 +71,7 @@ const Home: NextPage<Props> = (props) => {
     //console.log("code - " + code);
 
     let eResp = await Comms.postAPIData("execute_ecl", {
-      code: code,
+      code: header + code,
     });
 
     setStatusData([eResp]);
@@ -200,12 +204,28 @@ const Home: NextPage<Props> = (props) => {
       <Layout style={{ padding: 30 }}>
         <Tabs>
           <TabPane tab={"ECL"} key={"ECL"}>
+          <Collapse defaultActiveKey={['2']} >
+            <Collapse.Panel header="" key="1">
+            <CodeEditor
+              showLineNumbers={true}
+              value={props.header}
+              firstLineNum={1}
+              readonly={true}
+            />
+            </Collapse.Panel>
+            <Collapse.Panel header="" key="2" collapsible={"disabled"}>
             <CodeEditor
               value={props.code}
               onChange={(editor: any, data: any, value: string) =>
-                setCode(value)
+                setCode(value)            
               }
+              showLineNumbers={true} 
+              firstLineNum={header.split("\n").length + 1}
+              readonly={false}
             />
+            </Collapse.Panel>
+          </Collapse>
+            
             <Row style={{ paddingBottom: 5, paddingTop: 5 }}>
               <Col span={4}>
                 <Button type="primary" onClick={() => submitClick()}>
@@ -297,6 +317,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
   context
 ) => {
   let code: any = "";
+  let header: any = "";
   let treeData: any[] = [];
   let logicalFiles: string[] = [];
   if (context.req.method == "POST") {
@@ -307,6 +328,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
         if (!err) {
           console.log("fields = " + JSON.stringify(fields));
           code = fields.code;
+          header = fields.header;
           let fileNames: any = fields.files;
           if (fileNames && fileNames.length > 0) {
             let fileNamesList: string[] = fileNames.split(",");
@@ -325,6 +347,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
   return {
     props: {
       code: code,
+      header: header,
       logicalFiles: treeData,
     },
   };

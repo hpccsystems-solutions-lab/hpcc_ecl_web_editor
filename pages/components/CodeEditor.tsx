@@ -12,7 +12,7 @@ const CodeEditor = (props: any) => (
     <CodeMirror
       {...props}
       value={props.value}
-      options={{lineNumbers: true, mode: 'ecl'}}
+      options={{lineNumbers: props.showLineNumbers, firstLineNumber: props.firstLineNum, readOnly: props.readonly, mode: 'ecl'}}
     />
   </div>
 )
