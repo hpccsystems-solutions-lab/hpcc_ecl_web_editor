@@ -204,13 +204,14 @@ const Home: NextPage<Props> = (props) => {
       <Layout style={{ padding: 30 }}>
         <Tabs>
           <TabPane tab={"ECL"} key={"ECL"}>
-          <Collapse defaultActiveKey={['2']} >
+          <Collapse defaultActiveKey={['2']}  bordered={false} >
             <Collapse.Panel header="" key="1">
             <CodeEditor
               showLineNumbers={true}
               value={props.header}
               firstLineNum={1}
               readonly={true}
+              
             />
             </Collapse.Panel>
             <Collapse.Panel header="" key="2" collapsible={"disabled"}>
