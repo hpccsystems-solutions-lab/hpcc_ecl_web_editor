@@ -351,7 +351,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
       header: header,
       logicalFiles: treeData,
     },
-  };
+  }; 
 };
 
 export default Home;
