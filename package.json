@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@ant-design/icons": "^4.7.0",
-    "@hpcc-js/comms": "^2.62.0",
+    "@hpcc-js/comms": "^2.81.1",
     "@types/formidable": "^1.2.4",
     "antd": "^4.16.13",
     "codemirror": "^5.63.3",
