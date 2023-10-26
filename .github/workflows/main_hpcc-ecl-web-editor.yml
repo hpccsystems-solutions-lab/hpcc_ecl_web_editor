@@ -14,51 +14,49 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: Set up Node.js version
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v3
         with:
-          node-version: "18.14.1"
+          node-version: '18.x'
 
       - name: npm install, build, and test
         run: |
-          npm install --force
+          npm install
           npm run build --if-present
           npm run test --if-present
 
-      - name: Zip artifacts
-        run: |
-          zip -r node-app.zip .
+      - name: Zip artifact for deployment
+        run: zip release.zip ./* -r
 
       - name: Upload artifact for deployment job
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: node-app
-          path: node-app.zip
+          path: release.zip
 
   deploy:
     runs-on: ubuntu-latest
     needs: build
     environment:
-      name: "Development"
+      name: 'Production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
     steps:
       - name: Download artifact from build job
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: node-app
 
-      - name: Unzip artifacts
-        run: |
-          unzip node-app.zip
-          rm node-app.zip
+      - name: Unzip artifact for deployment
+        run: unzip release.zip
 
-      - name: "Deploy to Azure Web App"
+      - name: 'Deploy to Azure Web App'
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
         with:
-          app-name: "hpcc-ecl-web-editor"
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_0C61B51ED97747BE955E89D08E72FBDA }}
+          app-name: 'hpcc-ecl-web-editor'
+          slot-name: 'Production'
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_FC653AF908C545F0A42837B2B1493FF9 }}
           package: .
