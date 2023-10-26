@@ -1,7 +1,7 @@
 import type { NextPage } from "next";
 import dynamic from "next/dynamic";
 import { GetServerSideProps } from "next";
-import { Button, Layout, Table, Tabs, Row, Col, Tree, Collapse} from "antd";
+import { Button, Layout, Table, Tabs, Row, Col, Tree, Collapse } from "antd";
 import { Key } from "antd/es/table/interface";
 import { useState } from "react";
 import { Comms } from "../utils/Comms";
@@ -31,7 +31,7 @@ const Home: NextPage<Props> = (props) => {
 
   //Code
   const [code, setCode] = useState<string>(props.code);
-  
+
   //Used to show a readonly view of some required code. An expandable section.
   const [header, setHeader] = useState<string>(props.header);
 
@@ -110,32 +110,45 @@ const Home: NextPage<Props> = (props) => {
   }
 
   function renderCell(value: any) {
-    if (typeof(value) === 'object') {
-      return (
+    let isArray = Array.isArray(value?.Item);
+
+    if (typeof value === "object") {
+      //if isArray is true, return a String of the array rather than computing a table off of it
+      if (isArray) {
+        return String(value.Item);
+      } else {
+        return (
           <Table
-          rowKey={"_row_id_"}
-          columns={computeTableColumns(value)}
-          dataSource={value}
-          pagination={false}
-          size={"small"}
+            rowKey={"_row_id_"}
+            columns={computeTableColumns(value)}
+            dataSource={value}
+            pagination={false}
+            size={"small"}
           />
-        )
+        );
+      }
     } else {
-      return (String(value))
+      return String(value);
     }
   }
 
   //UI Metadata
   function computeTableColumns(data: any) {
     let columns: any[] = [];
-    if (data.length > 0) {
+    if (data?.length > 0) {
       //Use the first row to construct the columns
-      Object.keys(data[0]).forEach((key) => {
+      Object?.keys(data[0])?.forEach((key) => {
         if ("_row_id_" !== key)
           //ignore the decorated column used to produce a unique row key
-          columns.push({ title: key, dataIndex: key, key: key, render: (text: any) => <span>{renderCell(text)}</span> });
+          columns.push({
+            title: key,
+            dataIndex: key,
+            key: key,
+            render: (text: any) => <span>{renderCell(text)}</span>,
+          });
       });
     }
+
     return columns;
   }
 
@@ -159,8 +172,8 @@ const Home: NextPage<Props> = (props) => {
               columns={[
                 { title: "Error", dataIndex: "type", key: "type" },
                 { title: "Message", dataIndex: "text", key: "text" },
-                { title: "Line", dataIndex: "line", key: "line"},
-                { title: "Column", dataIndex: "column", key: "column"}
+                { title: "Line", dataIndex: "line", key: "line" },
+                { title: "Column", dataIndex: "column", key: "column" },
               ]}
               dataSource={messages}
             />
@@ -181,10 +194,11 @@ const Home: NextPage<Props> = (props) => {
             rowKey={"_row_id_"}
             columns={computeTableColumns(item.data)}
             dataSource={item.data}
-            
             expandable={{
-              expandedRowRender: record => <p style={{ margin: 0 }}>{record}</p>,
-              rowExpandable: record => record.length ,
+              expandedRowRender: (record) => (
+                <p style={{ margin: 0 }}>{record}</p>
+              ),
+              rowExpandable: (record) => record.length,
             }}
           />
         </TabPane>
@@ -204,29 +218,28 @@ const Home: NextPage<Props> = (props) => {
       <Layout style={{ padding: 30 }}>
         <Tabs>
           <TabPane tab={"ECL"} key={"ECL"}>
-          <Collapse defaultActiveKey={['2']}  bordered={false} >
-            <Collapse.Panel header="" key="1">
-            <CodeEditor
-              showLineNumbers={true}
-              value={props.header}
-              firstLineNum={1}
-              readonly={true}
-              
-            />
-            </Collapse.Panel>
-            <Collapse.Panel header="" key="2" collapsible={"disabled"}>
-            <CodeEditor
-              value={props.code}
-              onChange={(editor: any, data: any, value: string) =>
-                setCode(value)            
-              }
-              showLineNumbers={true} 
-              firstLineNum={header.split("\n").length + 1}
-              readonly={false}
-            />
-            </Collapse.Panel>
-          </Collapse>
-            
+            <Collapse defaultActiveKey={["2"]} bordered={false}>
+              <Collapse.Panel header="" key="1">
+                <CodeEditor
+                  showLineNumbers={true}
+                  value={props.header}
+                  firstLineNum={1}
+                  readonly={true}
+                />
+              </Collapse.Panel>
+              <Collapse.Panel header="" key="2" collapsible={"disabled"}>
+                <CodeEditor
+                  value={props.code}
+                  onChange={(editor: any, data: any, value: string) =>
+                    setCode(value)
+                  }
+                  showLineNumbers={true}
+                  firstLineNum={header.split("\n").length + 1}
+                  readonly={false}
+                />
+              </Collapse.Panel>
+            </Collapse>
+
             <Row style={{ paddingBottom: 5, paddingTop: 5 }}>
               <Col span={4}>
                 <Button type="primary" onClick={() => submitClick()}>
@@ -351,7 +364,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
       header: header,
       logicalFiles: treeData,
     },
-  }; 
+  };
 };
 
 export default Home;
