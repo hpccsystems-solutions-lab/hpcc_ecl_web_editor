@@ -58,5 +58,5 @@ jobs:
         uses: azure/webapps-deploy@v2
         with:
           app-name: "hpcc-ecl-web-editor"
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_0C61B51ED97747BE955E89D08E72FBDA }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_FC653AF908C545F0A42837B2B1493FF9 }}
           package: .
