@@ -7,6 +7,7 @@ import { useState } from "react";
 import { Comms } from "../utils/Comms";
 import { IncomingForm } from "formidable";
 import { EventDataNode } from "antd/lib/tree";
+import React from "react";
 
 const CodeEditor = dynamic(import("./components/CodeEditor"), { ssr: false });
 const { TabPane } = Tabs;
@@ -185,7 +186,7 @@ const Home: NextPage<Props> = (props) => {
 
   //The Results can contain multiple outputs so plan to create tabs and a table for each
   function plotOutput(queryData: any) {
-    let panels = [];
+    let panels: any[] = [];
     for (let i = 0; i < queryData.length; i++) {
       let item = queryData[i];
       panels.push(
@@ -195,10 +196,10 @@ const Home: NextPage<Props> = (props) => {
             columns={computeTableColumns(item.data)}
             dataSource={item.data}
             expandable={{
-              expandedRowRender: (record) => (
+              expandedRowRender: (record: any) => (
                 <p style={{ margin: 0 }}>{record}</p>
               ),
-              rowExpandable: (record) => record.length,
+              rowExpandable: (record: any) => record.length,
             }}
           />
         </TabPane>
@@ -312,7 +313,7 @@ function createTreeData(data: string[]) {
           .get(scopeName)
           .push({ key: qualifiedName, isLeaf: true, title: fileName });
       } else {
-        let node = [];
+        let node: any[] = [];
         node.push({ key: qualifiedName, isLeaf: true, title: fileName });
         map.set(scopeName, node);
       }
