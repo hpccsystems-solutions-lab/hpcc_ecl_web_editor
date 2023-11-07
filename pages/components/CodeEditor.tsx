@@ -15,7 +15,7 @@ const CodeEditor = (props: any) => (
       width="100%"
       height="800px"
       fontSize="1rem"
-      defaultValue={props.value}
+      defaultValue={props.value.toString()}
       showPrintMargin={false}
       onChange={props.onChange}
       setOptions={{
