@@ -9,7 +9,8 @@ import "ace-builds/src-noconflict/ext-language_tools";
 // }
 
 const CodeEditor = (props: any) => {
-  console.log(props.value.toString());
+  console.log(props.value);
+  console.log(props.code);
   return (
     <div style={{ width: "100%" }}>
       <AceEditor
@@ -17,7 +18,7 @@ const CodeEditor = (props: any) => {
         width="100%"
         height="800px"
         fontSize="1rem"
-        defaultValue={props.value.toString()}
+        defaultValue={props.value ? props.value.toString() : ""}
         showPrintMargin={false}
         onChange={props.onChange}
         setOptions={{
