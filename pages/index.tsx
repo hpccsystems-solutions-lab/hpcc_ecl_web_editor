@@ -40,6 +40,8 @@ const Home: NextPage<Props> = (props) => {
   const [logicalFileData, setLogicalFileData] = useState<any>([]);
   const [logicalFileDataColumns, setLogicalFileDataColumns] = useState<any>([]);
 
+  type EventDataNode = any;
+
   //Tree Node Selected to populate logical file contents
   async function treeNodeSelected(node: EventDataNode) {
     console.log(node.key);
@@ -221,22 +223,12 @@ const Home: NextPage<Props> = (props) => {
           <TabPane tab={"ECL"} key={"ECL"}>
             <Collapse defaultActiveKey={["2"]} bordered={false}>
               <Collapse.Panel header="" key="1">
-                <CodeEditor
-                  showLineNumbers={true}
-                  value={props.header}
-                  firstLineNum={1}
-                  readonly={true}
-                />
+                <CodeEditor value={props.header} />
               </Collapse.Panel>
               <Collapse.Panel header="" key="2" collapsible={"disabled"}>
                 <CodeEditor
-                  value={props.code}
-                  onChange={(editor: any, data: any, value: string) =>
-                    setCode(value)
-                  }
-                  showLineNumbers={true}
-                  firstLineNum={header.split("\n").length + 1}
-                  readonly={false}
+                  value={props.code ? props.code : code}
+                  onChange={(e: string) => setCode(e)}
                 />
               </Collapse.Panel>
             </Collapse>

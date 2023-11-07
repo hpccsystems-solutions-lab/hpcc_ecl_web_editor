@@ -1,20 +1,29 @@
-import React, { Component } from 'react'
-import {UnControlled as CodeMirror} from 'react-codemirror2'
-import 'codemirror/lib/codemirror.css'
-import 'codemirror/theme/material.css'
+import React, { Component } from "react";
+import AceEditor from "react-ace";
 
-if (typeof navigator !== 'undefined') {
-  require('codemirror/mode/ecl/ecl');
-}
+import "ace-builds/src-noconflict/mode-javascript";
+import "ace-builds/src-noconflict/ext-language_tools";
+
+// if (typeof navigator !== 'undefined') {
+//   require('codemirror/mode/ecl/ecl');
+// }
 
 const CodeEditor = (props: any) => (
-  <div style={{width:'100%'}}>
-    <CodeMirror
+  <div style={{ width: "100%" }}>
+    <AceEditor
+      mode="javascript"
       {...props}
-      value={props.value}
-      options={{lineNumbers: props.showLineNumbers, firstLineNumber: props.firstLineNum, readOnly: props.readonly, mode: 'ecl'}}
+      width="100%"
+      height="800px"
+      fontSize="1rem"
+      defaultValue={props.value}
+      showPrintMargin={false}
+      onChange={props.onChange}
+      setOptions={{
+        highlightActiveLine: true,
+      }}
     />
   </div>
-)
+);
 
 export default CodeEditor;
