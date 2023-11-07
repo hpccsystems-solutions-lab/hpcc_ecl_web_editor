@@ -12,7 +12,6 @@ const CodeEditor = (props: any) => (
   <div style={{ width: "100%" }}>
     <AceEditor
       mode="javascript"
-      {...props}
       width="100%"
       height="800px"
       fontSize="1rem"
