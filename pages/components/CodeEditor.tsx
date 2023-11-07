@@ -8,21 +8,23 @@ import "ace-builds/src-noconflict/ext-language_tools";
 //   require('codemirror/mode/ecl/ecl');
 // }
 
-const CodeEditor = (props: any) => (
-  <div style={{ width: "100%" }}>
-    <AceEditor
-      mode="javascript"
-      width="100%"
-      height="800px"
-      fontSize="1rem"
-      defaultValue={props.value.toString()}
-      showPrintMargin={false}
-      onChange={props.onChange}
-      setOptions={{
-        highlightActiveLine: true,
-      }}
-    />
-  </div>
-);
-
+const CodeEditor = (props: any) => {
+  console.log(props.value.toString());
+  return (
+    <div style={{ width: "100%" }}>
+      <AceEditor
+        mode="javascript"
+        width="100%"
+        height="800px"
+        fontSize="1rem"
+        defaultValue={props.value.toString()}
+        showPrintMargin={false}
+        onChange={props.onChange}
+        setOptions={{
+          highlightActiveLine: true,
+        }}
+      />
+    </div>
+  );
+};
 export default CodeEditor;
