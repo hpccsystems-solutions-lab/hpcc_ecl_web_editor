@@ -9,8 +9,6 @@ import "ace-builds/src-noconflict/ext-language_tools";
 // }
 
 const CodeEditor = (props: any) => {
-  console.log(props.value);
-  console.log(props.code);
   return (
     <div style={{ width: "100%" }}>
       <AceEditor
