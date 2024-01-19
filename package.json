@@ -10,15 +10,17 @@
   },
   "dependencies": {
     "@ant-design/icons": "^5.2.6",
+    "@hpcc-js/chart": "^2.81.9",
+    "@hpcc-js/codemirror": "^2.61.1",
     "@hpcc-js/comms": "^2.84.5",
+    "@hpcc-js/map": "^2.77.13",
     "@types/formidable": "^3.4.4",
-    "ace-builds": "^1.31.1",
     "antd": "^5.11.0",
     "formidable": "^3.5.1",
     "next": "^14.0.1",
     "react": "18.2.0",
-    "react-ace": "^10.1.0",
-    "react-dom": "18.2.0"
+    "react-dom": "18.2.0",
+    "react-sizeme": "^3.0.0"
   },
   "devDependencies": {
     "@types/react": "18.2.36",

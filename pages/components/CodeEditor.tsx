@@ -1,8 +1,6 @@
 import React, { Component } from "react";
 import AceEditor from "react-ace";
-
-import "ace-builds/src-noconflict/mode-javascript";
-import "ace-builds/src-noconflict/ext-language_tools";
+import { ECLEditorComponent } from "./ECLCodeEditor";
 
 // if (typeof navigator !== 'undefined') {
 //   require('codemirror/mode/ecl/ecl');
@@ -10,9 +8,15 @@ import "ace-builds/src-noconflict/ext-language_tools";
 
 const CodeEditor = (props: any) => {
   return (
-    <div style={{ width: "100%" }}>
-      <AceEditor
-        mode="javascript"
+    <div style={{ width: "1600" }}>
+      <ECLEditorComponent
+        text={props.value ? props.value.toString() : ""}
+        width={1600}
+        height={400}
+        onChange={props.onChange}
+      ></ECLEditorComponent>
+      {/* <AceEditor
+        mode="sql"
         width="100%"
         height="800px"
         fontSize="1rem"
@@ -22,7 +26,7 @@ const CodeEditor = (props: any) => {
         setOptions={{
           highlightActiveLine: true,
         }}
-      />
+      /> */}
     </div>
   );
 };
