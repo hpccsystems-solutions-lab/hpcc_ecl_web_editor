@@ -135,3 +135,4 @@ export const AutosizeHpccJSComponent: FunctionComponent<
     </SizeMe>
   );
 };
+export default HpccJSComponent;

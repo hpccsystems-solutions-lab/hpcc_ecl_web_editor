@@ -73,3 +73,5 @@ export const AutosizeECLEditorComponent: FunctionComponent<
 
   return <AutosizeHpccJSComponent widget={editor} padding={4} />;
 };
+
+export default ECLEditorComponent;
