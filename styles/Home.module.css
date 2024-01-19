@@ -131,3 +131,7 @@
 .hpcc-js-component > div {
   width: 100% !important;
 }
+
+.CodeMirror cm-s-default {
+  width: 100% !important;
+}
