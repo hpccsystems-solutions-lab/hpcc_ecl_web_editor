@@ -123,3 +123,11 @@
 .CodeMirror {
   height: 800px;
 }
+
+.hpcc-js-component {
+  width: 100% !important;
+}
+
+.hpcc-js-component > div {
+  width: 100% !important;
+}

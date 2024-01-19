@@ -15,4 +15,10 @@ a {
   box-sizing: border-box;
 }
 
+.hpcc-js-component {
+  width: 100% !important;
+}
 
+.hpcc-js-component > div {
+  width: 100% !important;
+}
