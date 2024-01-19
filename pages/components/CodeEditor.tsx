@@ -8,10 +8,10 @@ import { ECLEditorComponent } from "./ECLCodeEditor";
 
 const CodeEditor = (props: any) => {
   return (
-    <div style={{ width: "1600" }}>
+    <div style={{ width: "100%" }}>
       <ECLEditorComponent
         text={props.value ? props.value.toString() : ""}
-        width={1600}
+        width={800}
         height={400}
         onChange={props.onChange}
       ></ECLEditorComponent>
