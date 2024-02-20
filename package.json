@@ -12,7 +12,7 @@
     "@ant-design/icons": "^5.2.6",
     "@hpcc-js/chart": "^2.81.9",
     "@hpcc-js/codemirror": "^2.61.1",
-    "@hpcc-js/comms": "^2.84.5",
+    "@hpcc-js/comms": "^2.90.0",
     "@hpcc-js/map": "^2.77.13",
     "@types/formidable": "^3.4.4",
     "antd": "^5.11.0",
@@ -20,7 +20,8 @@
     "next": "^14.0.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "react-sizeme": "^3.0.0"
+    "react-sizeme": "^3.0.0",
+    "undici": "^6.6.2"
   },
   "devDependencies": {
     "@types/react": "18.2.36",
