@@ -12,7 +12,7 @@
     "@ant-design/icons": "^5.2.6",
     "@hpcc-js/chart": "^2.81.9",
     "@hpcc-js/codemirror": "^2.61.1",
-    "@hpcc-js/comms": "^2.90.0",
+    "@hpcc-js/comms": "^2.91.3",
     "@hpcc-js/map": "^2.77.13",
     "@types/formidable": "^3.4.4",
     "antd": "^5.11.0",
