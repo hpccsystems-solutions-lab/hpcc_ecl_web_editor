@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@ant-design/icons": "^5.2.6",
+    "@ant-design/icons": "^5.3.7",
     "@hpcc-js/chart": "^2.81.9",
     "@hpcc-js/codemirror": "^2.61.1",
     "@hpcc-js/comms": "^2.91.3",
