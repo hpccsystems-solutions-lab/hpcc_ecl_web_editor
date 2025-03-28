@@ -1,31 +1,32 @@
 {
-  "name": "hpcc_ecl_web_editor",
+  "name": "antd-demo",
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
   },
   "dependencies": {
-    "@ant-design/icons": "^5.3.7",
-    "@hpcc-js/chart": "^2.81.9",
-    "@hpcc-js/codemirror": "^2.61.1",
-    "@hpcc-js/comms": "^2.91.3",
-    "@hpcc-js/map": "^2.77.13",
-    "@types/formidable": "^3.4.4",
-    "antd": "^5.11.0",
-    "formidable": "^3.5.1",
-    "next": "^14.2.21",
-    "react": "18.2.0",
-    "react-dom": "18.2.0",
-    "react-sizeme": "^3.0.0"
+    "@hpcc-js/codemirror": "^2.65.0",
+    "@hpcc-js/comms": "^2.99.1",
+    "antd": "^5.24.5",
+    "formidable": "^3.5.2",
+    "next": "15.2.4",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-sizeme": "^3.0.2"
   },
   "devDependencies": {
-    "@types/react": "18.2.36",
-    "eslint": "8.53.0",
-    "eslint-config-next": "14.0.1",
-    "typescript": "5.2.2"
+    "@eslint/eslintrc": "^3",
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "15.2.4",
+    "tailwindcss": "^4",
+    "typescript": "^5"
   }
 }
