@@ -14,25 +14,34 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Set up Node.js version
+      - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: "20.x"
 
-      - name: npm install, build, and test
+      - name: Clean install dependencies
         run: |
           rm -rf node_modules package-lock.json
-          npm install --force
-          npm run build --if-present
-          # npm run test --if-present
+          npm cache clean --force
+          npm install
 
-      - name: Zip artifact for deployment
-        run: zip release.zip ./* -r
+      - name: Debug missing modules
+        run: ls -la node_modules/rc-util/es/Dom/ || echo "rc-util module missing!"
 
-      - name: Upload artifact for deployment job
-        uses: actions/checkout@v4
+      - name: Check installed dependencies
+        run: npm list --depth=2 rc-util || echo "rc-util might be missing"
+
+      - name: Build project
+        run: npm run build --if-present
+
+      - name: Archive artifact for deployment
+        run: zip -r release.zip . -x "node_modules/*"
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
         with:
           name: node-app
           path: release.zip
@@ -46,14 +55,17 @@ jobs:
 
     steps:
       - name: Download artifact from build job
-        uses: actions/download-artifact@v4.1.7
+        uses: actions/download-artifact@v4
         with:
           name: node-app
 
       - name: Unzip artifact for deployment
         run: unzip release.zip
 
-      - name: "Deploy to Azure Web App"
+      - name: Install production dependencies
+        run: npm install --production
+
+      - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
         with:
