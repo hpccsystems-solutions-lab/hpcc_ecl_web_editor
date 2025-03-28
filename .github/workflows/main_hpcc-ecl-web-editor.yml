@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Set up Node.js version
         uses: actions/setup-node@v3
@@ -23,17 +23,16 @@ jobs:
 
       - name: npm install, build, and test
         run: |
-          rm -rf node_modules package-lock.json  # Clear existing dependencies
-          npm install rc-util@^5.43.0            # Explicitly install rc-util
-          npm install                            # Fresh install without --force
+          rm -rf node_modules package-lock.json
+          npm install --force
           npm run build --if-present
-          # npm run test --if-present            # Keep commented if not needed
+          # npm run test --if-present
 
       - name: Zip artifact for deployment
         run: zip release.zip ./* -r
 
       - name: Upload artifact for deployment job
-        uses: actions/upload-artifact@v4.1.7 # Fixed from actions/checkout@v4
+        uses: actions/checkout@v4
         with:
           name: node-app
           path: release.zip
