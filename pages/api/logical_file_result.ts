@@ -2,35 +2,35 @@
 import { WorkunitsService } from "@hpcc-js/comms";
 import type { NextApiRequest, NextApiResponse } from "next";
 
-
 type Data = {
   status: string;
   data: any;
 };
 
 function splitQuotes(line: string) {
-  if(line.indexOf('"') < 0) 
-    return line.split(',')
+  if (line.indexOf('"') < 0) return line.split(",");
 
-  let result = [], cell = '', quote = false;
-  for(let i = 0; i < line.length; i++) {
-    let char = line[i]
-    if(char == '"' && line[i+1] == '"') {
-      cell += char
-      i++
-    } else if(char == '"') {
+  let result = [],
+    cell = "",
+    quote = false;
+  for (let i = 0; i < line.length; i++) {
+    let char = line[i];
+    if (char == '"' && line[i + 1] == '"') {
+      cell += char;
+      i++;
+    } else if (char == '"') {
       quote = !quote;
-    } else if(!quote && char == ',') {
-      result.push(cell)
-      cell = ''
+    } else if (!quote && char == ",") {
+      result.push(cell);
+      cell = "";
     } else {
-      cell += char
+      cell += char;
     }
-    if ( i == line.length-1 && cell) {
-      result.push(cell)
+    if (i == line.length - 1 && cell) {
+      result.push(cell);
     }
   }
-  return result
+  return result;
 }
 
 function decorateRowId(data: any[]) {
@@ -55,18 +55,13 @@ function computeTableColumns(data: any) {
   return columns;
 }
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse<Data>
-) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse<Data>) {
   const host = process.env.HPCC_APP_URL;
   const port = process.env.HPCC_APP_PORT;
   const userId = process.env.HPCC_USER_ID;
   const password = process.env.HPCC_PASSWORD;
   const jobName = process.env.HPCC_EXECUTE_JOB_NAME;
-  const cluster = process.env.HPCC_EXECUTE_CLUSTER_NAME
-    ? process.env.HPCC_EXECUTE_CLUSTER_NAME
-    : "";
+  const cluster = process.env.HPCC_EXECUTE_CLUSTER_NAME ? process.env.HPCC_EXECUTE_CLUSTER_NAME : "";
 
   if (req.method !== "POST") {
     res.status(400).send({ status: "failed", data: [] });
@@ -93,12 +88,13 @@ export default async function handler(
     Start: 0,
   });
   if (fileType !== "csv") {
-    res.status(200).json({ 
+    res.status(200).json({
       status: "completed",
-      data: decorateRowId(rResponse.Result.Row),
+      // data: decorateRowId(rResponse.Result.Row),
+      data: decorateRowId((rResponse.Result as any).Row), // Temporary workaround
     });
   } else {
-    console.log('CSV File Read ' + reqPayload.logicalFile);
+    console.log("CSV File Read " + reqPayload.logicalFile);
 
     //Format CSV
     let data = rResponse.Result.Row;
@@ -110,31 +106,28 @@ export default async function handler(
     //Build the data json
     let rows: any[] = [];
     for (let i: number = 1; i < data.length; i++) {
-      
       let row = null;
-      try {  
-        let row = splitQuotes((data[i].line));
+      try {
+        let row = splitQuotes(data[i].line);
         let colIndex = 0;
         let jsonRow = '{"_row_id_":' + i;
-  
+
         row.forEach((value: any) => {
           jsonRow = jsonRow + ',"' + columns[colIndex] + '":"' + value + '"';
-  
+
           colIndex++;
         });
         jsonRow = jsonRow + "}";
-  
+
         //console.log(jsonRow);
         rows.push(JSON.parse(jsonRow));
-     
       } catch (e) {
-        let jsonRow = '{"_row_id_":' + i + ',"' + columns[0] + '":"'  + e + '"}';
+        let jsonRow = '{"_row_id_":' + i + ',"' + columns[0] + '":"' + e + '"}';
         console.log(jsonRow);
         //rows.push(JSON.parse(jsonRow));
       }
     }
     //console.log(rows);
     res.status(200).json({ status: "completed", data: rows });
-
   }
 }
