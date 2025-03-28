@@ -97,7 +97,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     console.log("CSV File Read " + reqPayload.logicalFile);
 
     //Format CSV
-    let data = rResponse.Result.Row;
+    let parsedResult = JSON.parse(rResponse.Result);
+    let data = parsedResult.Row;
 
     //Assume that first row is column definitions
     let columns: string[] = computeTableColumns(data);
