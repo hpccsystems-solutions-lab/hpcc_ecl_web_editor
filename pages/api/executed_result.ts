@@ -7,32 +7,28 @@ type Data = {
   messages: any[];
 };
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse<Data>
-) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse<Data>) {
   const host = process.env.HPCC_APP_URL;
   const port = process.env.HPCC_APP_PORT;
   const userId = process.env.HPCC_USER_ID;
   const password = process.env.HPCC_PASSWORD;
   const jobName = process.env.HPCC_EXECUTE_JOB_NAME;
-  const cluster = process.env.HPCC_EXECUTE_CLUSTER_NAME
-    ? process.env.HPCC_EXECUTE_CLUSTER_NAME
-    : "";
+  const cluster = process.env.HPCC_EXECUTE_CLUSTER_NAME ? process.env.HPCC_EXECUTE_CLUSTER_NAME : "";
 
   function handleChildRecords(row: any): any {
     let jsonData: any = [];
     let count = 1;
 
     Object.keys(row).forEach((key) => {
-      if (row[key].Row) { //Check to see if Row tag is present. If it is, then we have child record. Needs to format to correct JSON
+      if (row[key].Row) {
+        //Check to see if Row tag is present. If it is, then we have child record. Needs to format to correct JSON
         jsonData[key] = decorateRow(row[key].Row);
       } else {
         jsonData[key] = row[key];
       }
     });
 
-    return jsonData ;
+    return jsonData;
   }
 
   function decorateRow(data: any[]) {
@@ -43,15 +39,14 @@ export default async function handler(
 
       data.forEach((row) => {
         let newRow = { _row_id_: count++, ...row };
-        
-        //console.log("new row: " + JSON.stringify(newRow));
-        
-        let flatRow: any = handleChildRecords(newRow);
-        
-        //console.log("flat row: " + JSON.stringify({...flatRow}));
-        
 
-        newData.push({...flatRow});
+        //console.log("new row: " + JSON.stringify(newRow));
+
+        let flatRow: any = handleChildRecords(newRow);
+
+        //console.log("flat row: " + JSON.stringify({...flatRow}));
+
+        newData.push({ ...flatRow });
       });
     }
     return newData;
@@ -92,7 +87,7 @@ export default async function handler(
       outputs.push({
         name: item.Name,
         columns: item.ECLSchemas ? item.ECLSchemas.ECLSchemaItem : [],
-        data: decorateRow(rResponse.Result.Row),
+        data: decorateRow((rResponse.Result as any).Row), // Temporary workaround
       });
     }
     respOutputs.forEach((item: any) => {});
@@ -110,10 +105,7 @@ export default async function handler(
       });
 
       let messages: any[] = [];
-      if (
-        iResponse.Workunit.Exceptions &&
-        iResponse.Workunit.Exceptions.ECLException
-      ) {
+      if (iResponse.Workunit.Exceptions && iResponse.Workunit.Exceptions.ECLException) {
         iResponse.Workunit.Exceptions.ECLException.forEach((item: any) => {
           messages.push({
             type: item.Severity,
@@ -124,9 +116,7 @@ export default async function handler(
         });
       }
 
-      res
-        .status(200)
-        .json({ status: wuState, results: [], messages: messages });
+      res.status(200).json({ status: wuState, results: [], messages: messages });
     } else {
       res.status(200).json({ status: wuState, results: [], messages: [] });
     }
