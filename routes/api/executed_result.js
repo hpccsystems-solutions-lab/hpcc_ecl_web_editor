@@ -92,7 +92,10 @@ router.post("/executed_result", async (req, res) => {
       });
 
       let messages = [];
-      if (iResponse.Workunit.Exceptions && iResponse.Workunit.Exceptions.ECLException) {
+      if (
+        iResponse.Workunit.Exceptions &&
+        iResponse.Workunit.Exceptions.ECLException
+      ) {
         iResponse.Workunit.Exceptions.ECLException.forEach((item) => {
           messages.push({
             type: item.Severity,
@@ -103,13 +106,22 @@ router.post("/executed_result", async (req, res) => {
         });
       }
 
-      res.status(200).json({ status: wuState, results: [], messages: messages });
+      res
+        .status(200)
+        .json({ status: wuState, results: [], messages: messages });
     } else {
       res.status(200).json({ status: wuState, results: [], messages: [] });
     }
   } catch (error) {
     console.error("Error in /api/executed_result:", error);
-    res.status(500).json({ status: "error", results: [], messages: [] });
+    res
+      .status(500)
+      .json({
+        status: "error",
+        results: [],
+        messages: [],
+        message: error?.message || String(error),
+      });
   }
 });
 

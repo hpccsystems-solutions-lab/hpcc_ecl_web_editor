@@ -40,7 +40,13 @@ router.post("/execute_ecl", async (req, res) => {
     res.status(200).json({ status: "submitted", workunitId: workunitId });
   } catch (error) {
     console.error("Error in /api/execute_ecl:", error);
-    res.status(500).json({ status: "failed", workunitId: "" });
+    res
+      .status(500)
+      .json({
+        status: "failed",
+        workunitId: "",
+        message: error?.message || String(error),
+      });
   }
 });
 

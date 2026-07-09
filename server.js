@@ -6,7 +6,7 @@ const path = require("path");
 const app = express();
 
 app.use(express.json());
-app.use(express.static(path.join(__dirname, "build")));
+app.use(express.static(path.join(__dirname, "dist")));
 
 // Load API routes
 app.use("/api", require("./routes/api/execute_ecl"));
@@ -14,7 +14,7 @@ app.use("/api", require("./routes/api/executed_result"));
 app.use("/api", require("./routes/api/logical_file_result"));
 
 app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "build", "index.html"));
+  res.sendFile(path.join(__dirname, "dist", "index.html"));
 });
 
 const PORT = process.env.PORT || 3000;
