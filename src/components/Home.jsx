@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { Button, Layout, Table, Tabs, Row, Col, Tree, Collapse } from "antd";
+import { Button, Layout, Table, Tabs, Tree, Collapse } from "antd";
 import comms from "../utils/comms";
 import CodeEditor from "./CodeEditor";
 import "antd/dist/reset.css";
 const { TabPane } = Tabs;
-const { Header } = Layout;
+const { Header, Footer } = Layout;
 
 function Home() {
   // Initial state (replacing props from getServerSideProps)
@@ -14,10 +14,13 @@ function Home() {
 
   // Data from query result
   const [queryData, setQueryData] = useState([]);
-  const [statusData, setStatusData] = useState([{ status: "", workunitId: "" }]);
+  const [statusData, setStatusData] = useState([
+    { status: "", workunitId: "" },
+  ]);
   const [messages, setMessages] = useState([]);
   const [logicalFileData, setLogicalFileData] = useState([]);
   const [logicalFileDataColumns, setLogicalFileDataColumns] = useState([]);
+  const [activeTab, setActiveTab] = useState("ECL");
 
   // Simulate getServerSideProps with client-side fetch on mount
   useEffect(() => {
@@ -108,7 +111,15 @@ function Home() {
       if (isArray) {
         return String(value.Item);
       } else {
-        return <Table rowKey="_row_id_" columns={computeTableColumns(value)} dataSource={value} pagination={false} size="small" />;
+        return (
+          <Table
+            rowKey="_row_id_"
+            columns={computeTableColumns(value)}
+            dataSource={value}
+            pagination={false}
+            size="small"
+          />
+        );
       }
     } else {
       return String(value);
@@ -164,23 +175,29 @@ function Home() {
             columns={computeTableColumns(item.data)}
             dataSource={item.data}
             expandable={{
-              expandedRowRender: (record) => <p style={{ margin: 0 }}>{record}</p>,
+              expandedRowRender: (record) => (
+                <p style={{ margin: 0 }}>{record}</p>
+              ),
               rowExpandable: (record) => record.length,
             }}
           />
-        </TabPane>
+        </TabPane>,
       );
     }
     return <Tabs>{panels}</Tabs>;
   }
 
   return (
-    <Layout style={{ minHeight: "100vh" }}>
-      <Header>
-        <div style={{ fontSize: 18, color: "white" }}>HPCC Systems - ECL Web Editor</div>
+    <Layout className="home-layout">
+      <Header className="home-header">
+        <div className="home-title">HPCC Systems - ECL Web Editor</div>
       </Header>
-      <Layout style={{ padding: 30 }}>
-        <Tabs>
+      <Layout className="home-content">
+        <Tabs
+          className="home-tabs"
+          activeKey={activeTab}
+          onChange={setActiveTab}
+        >
           <TabPane tab="ECL" key="ECL">
             <Collapse defaultActiveKey={["2"]} bordered={false}>
               <Collapse.Panel header="" key="1">
@@ -190,22 +207,12 @@ function Home() {
                 <CodeEditor value={code} onChange={(e) => setCode(e)} />
               </Collapse.Panel>
             </Collapse>
-            <Row style={{ paddingBottom: 5, paddingTop: 5 }}>
-              <Col span={4}>
-                <Button type="primary" onClick={submitClick}>
-                  Submit
-                </Button>
-              </Col>
-              <Col span={8}>
-                <span style={{ fontSize: 16, color: "blueviolet" }}>{statusData[0].status}</span>
-              </Col>
-            </Row>
             {plotMessages(messages)}
             {plotOutput(queryData)}
           </TabPane>
           <TabPane tab="LOGICAL FILES" key="Logical Files">
-            <Layout style={{ height: 800 }}>
-              <Layout.Sider width={400} style={{ background: "white", overflow: "scroll" }}>
+            <div className="logical-files-layout">
+              <div className="logical-files-tree-panel">
                 <Tree
                   autoExpandParent
                   key="logicalFiles"
@@ -215,14 +222,27 @@ function Home() {
                   treeData={logicalFiles}
                   onSelect={(keys, e) => treeNodeSelected(e.node)}
                 />
-              </Layout.Sider>
-              <Layout style={{ overflow: "scroll", background: "white", height: 800 }}>
-                <Table columns={logicalFileDataColumns} dataSource={logicalFileData} />
-              </Layout>
-            </Layout>
+              </div>
+              <div className="logical-files-table-panel">
+                <Table
+                  columns={logicalFileDataColumns}
+                  dataSource={logicalFileData}
+                />
+              </div>
+            </div>
           </TabPane>
         </Tabs>
       </Layout>
+      <Footer className="home-footer">
+        <div className="footer-status">{statusData[0].status}</div>
+        <div className="footer-actions">
+          {activeTab === "ECL" ? (
+            <Button type="primary" onClick={submitClick}>
+              Submit
+            </Button>
+          ) : null}
+        </div>
+      </Footer>
     </Layout>
   );
 }
@@ -249,7 +269,9 @@ function createTreeData(data) {
       let fileName = toFileName(item);
       let qualifiedName = item;
       if (map.has(scopeName)) {
-        map.get(scopeName).push({ key: qualifiedName, isLeaf: true, title: fileName });
+        map
+          .get(scopeName)
+          .push({ key: qualifiedName, isLeaf: true, title: fileName });
       } else {
         let node = [];
         node.push({ key: qualifiedName, isLeaf: true, title: fileName });

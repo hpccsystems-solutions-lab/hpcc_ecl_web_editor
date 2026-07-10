@@ -2,7 +2,18 @@ html,
 body {
   padding: 0;
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    Segoe UI,
+    Roboto,
+    Oxygen,
+    Ubuntu,
+    Cantarell,
+    Fira Sans,
+    Droid Sans,
+    Helvetica Neue,
+    sans-serif;
 }
 
 a {
@@ -20,4 +31,118 @@ a {
 
 .hpcc-js-component > div {
   width: 100% !important;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+.home-layout {
+  min-height: 100vh;
+  width: 100%;
+}
+
+.home-header {
+  display: flex;
+  align-items: center;
+  padding-inline: clamp(16px, 3vw, 40px);
+}
+
+.home-title {
+  font-size: clamp(16px, 2vw, 22px);
+  color: #fff;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.home-content {
+  width: min(1400px, 100%);
+  margin: 0 auto;
+  padding: clamp(12px, 2.4vw, 30px);
+  padding-bottom: 8px;
+}
+
+.home-tabs {
+  width: 100%;
+}
+
+.logical-files-layout {
+  min-height: clamp(420px, 62vh, 760px);
+  display: flex;
+  gap: 12px;
+  width: 100%;
+}
+
+.logical-files-tree-panel,
+.logical-files-table-panel {
+  background: #fff;
+  border: 1px solid #f0f0f0;
+  border-radius: 8px;
+  overflow: auto;
+  max-height: clamp(420px, 62vh, 760px);
+}
+
+.logical-files-tree-panel {
+  width: min(340px, 36%);
+  min-width: 240px;
+  padding: 10px;
+}
+
+.logical-files-table-panel {
+  flex: 1;
+  min-width: 0;
+  padding: 8px;
+}
+
+.home-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 10px clamp(16px, 3vw, 40px);
+  border-top: 1px solid #f0f0f0;
+  background: #fff;
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+}
+
+.footer-status {
+  font-size: 15px;
+  color: #6a1b9a;
+  text-transform: capitalize;
+}
+
+.footer-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+@media (max-width: 900px) {
+  .logical-files-layout {
+    flex-direction: column;
+  }
+
+  .logical-files-tree-panel,
+  .logical-files-table-panel {
+    width: 100%;
+    min-width: 0;
+    max-height: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .home-footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .footer-actions {
+    width: 100%;
+  }
+
+  .footer-actions .ant-btn {
+    width: 100%;
+  }
 }
