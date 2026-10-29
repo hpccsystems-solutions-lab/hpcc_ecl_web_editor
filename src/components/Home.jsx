@@ -21,6 +21,7 @@ function Home() {
   const [logicalFileData, setLogicalFileData] = useState([]);
   const [logicalFileDataColumns, setLogicalFileDataColumns] = useState([]);
   const [activeTab, setActiveTab] = useState("ECL");
+  const [submitting, setSubmitting] = useState(false);
 
   // Simulate getServerSideProps with client-side fetch on mount
   useEffect(() => {
@@ -45,16 +46,21 @@ function Home() {
     if (node.isLeaf) {
       setStatusData([{ status: "", workunitId: "" }]);
       if (typeof node.key === "string") {
-        let rResp = await comms.postAPIData("logical_file_result", {
-          logicalFile: node.key,
-        });
+        try {
+          let rResp = await comms.postAPIData("logical_file_result", {
+            logicalFile: node.key,
+          });
 
-        if (rResp && rResp.status === "completed") {
+          if (!rResp || rResp.status !== "completed") {
+            throw new Error(rResp?.message || "Unable to load the logical file.");
+          }
           setLogicalFileDataColumns(computeTableColumns(rResp.data));
           setLogicalFileData(rResp.data);
-        } else {
+        } catch (error) {
+          console.error("Logical file request failed:", error);
           setLogicalFileDataColumns([]);
           setLogicalFileData([]);
+          setStatusData([{ status: error.message, workunitId: "" }]);
         }
       }
     }
@@ -62,41 +68,54 @@ function Home() {
 
   // Process code execution
   async function submitClick() {
+    setSubmitting(true);
     setStatusData([{ status: "submitting" }]);
     setQueryData([]);
     setMessages([]);
 
-    console.log("Start Submit - " + Date.now());
-    let eResp = await comms.postAPIData("execute_ecl", {
-      code: header + code,
-    });
-
-    setStatusData([eResp]);
-    let workunitId = eResp.workunitId;
-
-    let count = 0;
-    while (workunitId && count < 100) {
-      let rResp = await comms.postAPIData("executed_result", {
-        workunitId: workunitId,
+    let workunitId = "";
+    try {
+      let eResp = await comms.postAPIData("execute_ecl", {
+        code: header + code,
       });
 
-      console.log("workunit " + workunitId + " Status = " + rResp.status);
-      if (rResp) {
+      if (eResp.status !== "submitted" || !eResp.workunitId) {
+        throw new Error(eResp.message || "HPCC did not submit the workunit.");
+      }
+
+      workunitId = eResp.workunitId;
+      setStatusData([eResp]);
+
+      let count = 0;
+      while (count < 100) {
+        let rResp = await comms.postAPIData("executed_result", {
+          workunitId: workunitId,
+        });
+
         if (rResp.status === "completed") {
           setStatusData([{ status: rResp.status, workunitId: workunitId }]);
           setQueryData(rResp.results);
-          console.log("End Submit - " + Date.now());
           return;
         } else if (rResp.status === "failed") {
           setStatusData([{ status: rResp.status, workunitId: workunitId }]);
           setMessages(rResp.messages);
           return;
+        } else if (rResp.status === "error" || rResp.status === "aborted") {
+          throw new Error(rResp.message || `Workunit ${rResp.status}.`);
         } else {
           count++;
           setStatusData([{ status: rResp.status, workunitId: workunitId }]);
           await sleep(1000);
         }
       }
+
+      throw new Error("Timed out waiting for HPCC results. The workunit may still be running.");
+    } catch (error) {
+      console.error("ECL submission failed:", error);
+      setStatusData([{ status: "failed", workunitId }]);
+      setMessages([{ type: "Error", text: error.message }]);
+    } finally {
+      setSubmitting(false);
     }
   }
 
@@ -237,7 +256,7 @@ function Home() {
         <div className="footer-status">{statusData[0].status}</div>
         <div className="footer-actions">
           {activeTab === "ECL" ? (
-            <Button type="primary" onClick={submitClick}>
+            <Button type="primary" onClick={submitClick} loading={submitting}>
               Submit
             </Button>
           ) : null}

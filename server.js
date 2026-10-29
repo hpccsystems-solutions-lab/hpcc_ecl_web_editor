@@ -13,7 +13,7 @@ app.use("/api", require("./routes/api/execute_ecl"));
 app.use("/api", require("./routes/api/executed_result"));
 app.use("/api", require("./routes/api/logical_file_result"));
 
-app.get("*", (req, res) => {
+app.get("/{*splat}", (req, res) => {
   res.sendFile(path.join(__dirname, "dist", "index.html"));
 });
 

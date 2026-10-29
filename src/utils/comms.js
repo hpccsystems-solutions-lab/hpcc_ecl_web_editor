@@ -9,6 +9,18 @@ class Comms {
       headers,
       body: JSON.stringify(params),
     });
+    if (!res.ok) {
+      const body = await res.text();
+      let message = `Request failed (HTTP ${res.status})`;
+      try {
+        const error = JSON.parse(body);
+        message = error.message || error.error || message;
+      } catch {
+        // A proxy failure may return HTML or plain text rather than API JSON.
+      }
+      throw new Error(message);
+    }
+
     const jsonResult = await res.json();
 
     return jsonResult;

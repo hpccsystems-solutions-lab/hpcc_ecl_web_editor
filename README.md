@@ -4,6 +4,13 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 ## Available Scripts
 
+### Local API connection
+
+The Vite development server proxies `/api` requests to `http://127.0.0.1:3000`.
+Run both the Express backend and Vite with `npm run dev`. The explicit IPv4
+address avoids sending requests to an unrelated service listening on IPv6
+`localhost:3000`.
+
 In the project directory, you can run:
 
 ### `npm start`
