@@ -23,21 +23,19 @@ function Home() {
   const [activeTab, setActiveTab] = useState("ECL");
   const [submitting, setSubmitting] = useState(false);
 
-  // Simulate getServerSideProps with client-side fetch on mount
   useEffect(() => {
-    setCode("");
-    setHeader("");
-    setLogicalFiles([]);
-    // Example fetch (uncomment and adjust when Express is ready):
-    /*
-    fetch('/api/initial-data', { method: 'POST' })
-      .then(res => res.json())
-      .then(data => {
-        setCode(data.code);
-        setHeader(data.header);
-        setLogicalFiles(data.logicalFiles);
-      });
-    */
+    const initialData = document.getElementById("editor-initial-data");
+    if (initialData) {
+      try {
+        const { code, header, files } = JSON.parse(initialData.textContent);
+        setCode(code);
+        setHeader(header);
+        setLogicalFiles(createTreeData(files.split(",").map((file) => file.trim()).filter(Boolean)));
+      } catch (error) {
+        console.error("Unable to load editor launch data:", error);
+        setMessages([{ type: "Error", text: "Unable to load editor launch data." }]);
+      }
+    }
   }, []);
 
   // Tree node selection

@@ -4,6 +4,15 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 ## Available Scripts
 
+### Opening the editor from another page
+
+The production server accepts a form `POST /`, as demonstrated in
+`sample_client.html`. Send `code` and optionally `header` and `files` as
+URL-encoded strings; `files` is a comma-separated list of logical file names.
+The response opens the editor with that code, header, and logical-file tree.
+Opening the root URL with a normal GET still starts an empty editor.
+Build the frontend with `npm run build` before serving it with `npm start`.
+
 ### CI dependency installation
 
 The GitHub Actions workflow uses Node.js 24 and `npm ci` to install the exact

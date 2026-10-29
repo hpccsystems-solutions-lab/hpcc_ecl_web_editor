@@ -25,8 +25,31 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  document.getElementById("editor-initial-data")?.remove();
   vi.restoreAllMocks();
   vi.unstubAllGlobals();
+});
+
+test("loads posted launch data and submits the header with the code", async () => {
+  const initialData = document.createElement("script");
+  initialData.id = "editor-initial-data";
+  initialData.type = "application/json";
+  initialData.textContent = JSON.stringify({
+    code: "OUTPUT(value);",
+    header: "value := 1;\n",
+    files: "~scope::file.csv",
+  });
+  document.head.appendChild(initialData);
+  const post = vi.spyOn(comms, "postAPIData")
+    .mockResolvedValueOnce({ status: "submitted", workunitId: "W20261029-100000" })
+    .mockResolvedValueOnce({ status: "completed", results: [], messages: [] });
+  render(<App />);
+  expect(screen.getByLabelText("ECL code")).toHaveValue("OUTPUT(value);");
+  fireEvent.click(screen.getByRole("button", { name: "Submit" }));
+  await screen.findByText("completed");
+  expect(post).toHaveBeenNthCalledWith(1, "execute_ecl", {
+    code: "value := 1;\nOUTPUT(value);",
+  });
 });
 
 test("submits editor code and polls for completed results", async () => {
