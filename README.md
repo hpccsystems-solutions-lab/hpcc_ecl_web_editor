@@ -4,6 +4,14 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 ## Available Scripts
 
+### CI dependency installation
+
+The GitHub Actions workflow uses Node.js 24 and `npm ci` to install the exact
+versions in the committed `package-lock.json`, including security updates.
+The deployment job uses the same Node.js version and installs runtime
+dependencies with `npm ci --omit=dev`. Do not delete the lockfile or use
+`npm install --no-cache` in CI; npm's `cache` setting expects a directory path.
+
 ### Local API connection
 
 The Vite development server proxies `/api` requests to `http://127.0.0.1:3000`.
